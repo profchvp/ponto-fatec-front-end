@@ -1,0 +1,52 @@
+fazer uma API considerando:
+Linguagem Python;
+Acesso a BD: SQLite
+Local de hospedagem: PythonAnywhere (Conta Gratuita)
+IMPORTANTE: Esta API deve ser feita, levando em considerção que rodará no ambiente PythonAnywhere , com acesso à plinlha excel , manipulaçao de  tabelas SQLite,.
+====================================================
+Item 1.0: Tabelas do sistema:
+   > "unidade" : é a unidade fatec
+       colunas: codigoUnidade (PK - int); nomeFatecUnidade (Char 200); fatecDenominacaoOficial (CHar 200); nomeDiretor (Char 100)
+  
+   > "usuario": é o usuario responsavel pelo sistema
+       colunas:emailFatec (CHAR 100 - PK); numeroMatricula ;codigoUnidade (FK - tabela Unidade); nomeFuncionario (Char 200); senhaLogin(password); indicadorAtivo (Boolean), dataInclusao (date)    
+  	
+====================================================  
+Vamos fazer as rotas,  por etapas:
+No inicio do programa etapa  Criar  as tabelas "unidade" e "usuario", caso NÃO existam.
+Etapa 1:     Rota de criação da tabela básica: "unidade"
+ 	etapa  1.1 gravar a tabela de "unidade":
+		Na requisição, receber os dados em uma estrutura JSON  .  
+             
+					- 'codigoUnidade'  
+					- 'nomeUnidadeFatec'  
+					- 'denominacaoOficial'  
+					- 'nomeDiretor' 
+		Fazer a inclusao com os dados de entrada dataInclusao (data do systema)     
+		retornoar status Indicativo de OK com mensagem "Unidade cadastrada com sucesso"	
+
+   etapa 1.2 - Prever rota para exclusao de "unidade"     		
+Etapa 2:  Rota de inclusao de usuarios na tabela "usuario"
+
+					
+	   etapa  2.1 gravar a tabela de "usuario":
+		Na requisição, receber os dados em uma estrutura JSON  
+              		codigoUnidade (validar este campo acessando a tabela de "unidade" FK 
+					nomeFuncionario (Char 200); 
+					senhaLogin(password - criptografada);
+					
+		Fazer a inclusao com os dados de entrada com o atributo indicadorAtivo=True e dataInclusao (data do systema)     
+		retornoar status Indicativo de OK com mensagem "Usuario cadastrado com sucesso"
+		etapa 1.2 - Prever rota para LOGIN de "usuario":
+		   receber:
+		           email
+				   senha
+		   fazer acesso à tabela "usuario":
+		          se encontrado, verificar se a senha informada é igual à senha senhaLogin :
+				         Se senha OK:
+						                Devolver estrutura JSON:
+										        nomeFuncionario,
+												numeroMatricula 
+												codigoUnidade
+												emailFatec
+		etapa 1.3 - Prever rota para exclusao de "usuario"     		

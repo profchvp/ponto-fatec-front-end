@@ -1,0 +1,52 @@
+Dê continuidade à construção de  uma API considerando:
+Linguagem Python;
+Acesso a BD: SQLite
+Local de hospedagem: PythonAnywhere (Conta Gratuita)
+IMPORTANTE: Esta API foi iniciada. e a sua base para dar continuidade é o arquivo "app.py" anexo.
+====================================================
+Nesta demanda peço que seja feita uma refatoração para incluir o cadastramento (CRUD) da tabela "professor", conforme esquema abaixo:
+colunas: matricula (PK); nomeProfessor(char:100); statusSituacao (int) (1-"Ativo", 9-"Suspenso de Processamento")
+	               regimeJuridico(Char:20); cargaHoraria(Char:20);horaAtividade(int); 
+	               HAE-O (Char:20); HAE-C (Char:20); obsManha (char:100);obsTarde (char:100);obsNoite (char:100);
+
+====================================================  
+Vamos fazer as seguintes rotas:seguiremos as etapas abaxo
+
+Etapa 1:     Rota de criação da tabela  "professor"
+ 	etapa  1.1 gravar a tabela de "professor":
+		Na requisição, receber os dados em uma estrutura JSON  .  
+                    . matricula,
+					. nomeProfessor, 
+					. statusSituacao,   
+					. regimeJuridico,
+					. cargaHoraria,
+					. horaAtividade, 
+	                . HAE-O,
+                    . HAE-C,
+                    .obsManha,
+                    .obsTarde,
+                    .obsNoite (char:100);
+		Fazer a inclusao com os dados de entrada     
+		retornoar status Indicativo de OK com mensagem "Professor cadastrado com sucesso"	
+
+   etapa 1.2 - Prever rota para exclusao de "professor"  
+   etapa 1.3 - Prever rota para consulta de um  "professor"  por  matricula
+   etapa 1.4 - Prever rota para alteração dos dados do professor (por matricula)  
+           receber os dados JSON
+		            . matricula
+                    .nomeProfessor,   
+					. regimeJuridico,
+					. cargaHoraria,
+					. horaAtividade, 
+	                . HAE-O,
+                    . HAE-C,
+                    .obsManha,
+                    .obsTarde,
+                    .obsNoite (char:100);    
+	etapa 1.5 - Prever rota para alteração somente do status  do professor (por matricula)
+	receber os dados JSON
+	             matricula
+                statusSituacao	
+   Em todas as situações: retornar status informativo da operação, com o texto explicativo .
+
+Por favor; gere o código à integra. Deverá conter o que ja existia + o que foi incrementado   

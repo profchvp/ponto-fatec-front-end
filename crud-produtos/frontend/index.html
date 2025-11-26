@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Cadastro de Produtos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --c1:#1f6feb; --c2:#0d1117; --c3:#161b22; --c4:#30363d; --ok:#2ea043; --bad:#d73a49;}
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--c2); color: #e6edf3; margin:0; }
+    header { padding: 16px 24px; background: var(--c3); border-bottom:1px solid var(--c4); }
+    main { max-width: 880px; margin: 24px auto; padding: 0 16px; }
+    h1 { margin: 0; font-size: 20px; }
+    form { display:grid; grid-template-columns: 1fr 1fr; gap:12px; background: var(--c3); padding:16px; border:1px solid var(--c4); border-radius:8px; }
+    form .full { grid-column: 1 / -1; }
+    input, textarea { width:100%; padding:10px; border-radius:6px; border:1px solid var(--c4); background:#0b0f14; color:#e6edf3; }
+    button { background: var(--c1); color: #fff; border: none; padding: 10px 14px; border-radius:6px; cursor:pointer; }
+    button.secondary { background: #444c56; }
+    button.danger { background: var(--bad); }
+    table { width:100%; border-collapse: collapse; margin-top:16px; }
+    th, td { border-bottom:1px solid var(--c4); padding:10px; text-align:left; }
+    .row-actions { display:flex; gap:8px; }
+    .status { margin: 12px 0; }
+    .chip { display:inline-block; padding:4px 8px; border:1px solid var(--c4); border-radius:999px; }
+    .grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+    @media (max-width: 640px){
+      form { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Cadastro de Produtos (Frontend no GitHub Pages + Backend no PythonAnywhere)</h1>
+</header>
+<main>
+  <div class="status" id="status"></div>
+
+  <form id="produtoForm">
+    <input type="hidden" id="id" />
+    <div>
+      <label>Nome</label>
+      <input id="name" required />
+    </div>
+    <div class="grid-3">
+      <div>
+        <label>Preço</label>
+        <input id="price" type="number" step="0.01" required />
+      </div>
+      <div>
+        <label>Quantidade</label>
+        <input id="quantity" type="number" step="1" value="0" required />
+      </div>
+      <div style="display:flex; align-items:flex-end;">
+        <button type="submit" id="saveBtn">Salvar</button>
+      </div>
+    </div>
+    <div class="full">
+      <label>Descrição</label>
+      <textarea id="description" rows="3"></textarea>
+    </div>
+    <div class="full" id="editControls" style="display:none;">
+      <button type="button" class="secondary" onclick="cancelEdit()">Cancelar edição</button>
+    </div>
+  </form>
+
+  <section>
+    <h2>Produtos</h2>
+    <table id="produtosTable">
+      <thead>
+        <tr>
+          <th>#</th><th>Nome</th><th>Preço</th><th>Qtd</th><th>Descr.</th><th>Criado em</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  // 👉 TROQUE AQUI pelo endereço do seu backend no PythonAnywhere:
+  // Ex.: const BASE_URL = "https://seuusuario.pythonanywhere.com/api";
+  const BASE_URL = "http://127.0.0.1:5000/api"; // para teste local. Depois altere para o domínio do PythonAnywhere.
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  function setStatus(msg, ok=true){
+    const el = $("#status");
+    el.innerHTML = `<span class="chip" style="border-color:${ok ? '#2ea043' : '#d73a49'}">${msg}</span>`;
+  }
+
+  async function loadProducts(){
+    try{
+      const res = await fetch(`${BASE_URL}/products`);
+      const data = await res.json();
+      const tbody = $("#produtosTable tbody");
+      tbody.innerHTML = "";
+      data.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.name}</td>
+          <td>R$ ${Number(p.price).toFixed(2)}</td>
+          <td>${p.quantity}</td>
+          <td>${p.description || ""}</td>
+          <td>${new Date(p.created_at).toLocaleString('pt-BR')}</td>
+          <td class="row-actions">
+            <button onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
+            <button class="danger" onclick='deleteProduct(${p.id})'>Excluir</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      setStatus("Lista atualizada");
+    }catch(e){
+      setStatus("Erro ao carregar produtos", false);
+      console.error(e);
+    }
+  }
+
+  function editProduct(p){
+    $("#id").value = p.id;
+    $("#name").value = p.name;
+    $("#price").value = p.price;
+    $("#quantity").value = p.quantity;
+    $("#description").value = p.description || "";
+    $("#saveBtn").textContent = "Atualizar";
+    $("#editControls").style.display = "";
+  }
+
+  function cancelEdit(){
+    $("#produtoForm").reset();
+    $("#id").value = "";
+    $("#saveBtn").textContent = "Salvar";
+    $("#editControls").style.display = "none";
+  }
+
+  $("#produtoForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const payload = {
+      name: $("#name").value.trim(),
+      price: parseFloat($("#price").value),
+      quantity: parseInt($("#quantity").value),
+      description: $("#description").value.trim()
+    };
+    const id = $("#id").value;
+
+    try{
+      let res;
+      if(id){
+        res = await fetch(`${BASE_URL}/products/${id}`, {
+          method: "PUT",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(`${BASE_URL}/products`, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+      }
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || "Erro ao salvar");
+      setStatus(id ? "Produto atualizado!" : "Produto criado!");
+      cancelEdit();
+      loadProducts();
+    }catch(e){
+      setStatus(e.message, false);
+    }
+  });
+
+  async function deleteProduct(id){
+    if(!confirm("Tem certeza que deseja excluir?")) return;
+    try{
+      const res = await fetch(`${BASE_URL}/products/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || "Erro ao excluir");
+      setStatus("Produto excluído");
+      loadProducts();
+    }catch(e){
+      setStatus(e.message, false);
+    }
+  }
+
+  // Inicialização
+  loadProducts();
+</script>
+</body>
+</html>

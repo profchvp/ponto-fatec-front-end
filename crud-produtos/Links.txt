@@ -1,0 +1,22 @@
+Acesso ao PythonAnywhere
+    https://www.pythonanywhere.com/user/ProfVerissimo/
+	
+	chamada da API:
+	    const BASE_URL = "https://profverissimo.pythonanywhere.com/api";
+	
+	Acesso à end-point de producção:    
+		GET: https://profverissimo.pythonanywhere.com/api/products
+	Acesso à end-point de Dev:
+       GET: http://127.0.0.1:5000/api/products	
+	
+	
+Acesso ao Front-end
+   https://profchvp.github.io/crud-produtos-frontend/
+   
+==========================================
+// 👉 TROQUE AQUI pelo endereço do seu backend no PythonAnywhere:
+  // Ex.: const BASE_URL = "https://seuusuario.pythonanywhere.com/api";
+  //..........const BASE_URL = "http://127.0.0.1:5000/api"; // para teste local. Depois altere para o domínio do PythonAnywhere.
+  // Alternar entre local e produção
+const BASE_URL = window.location.hostname.includes("github.io")? "https://profverissimo.pythonanywhere.com/api" : "http://127.0.0.1:5000/api";
+   

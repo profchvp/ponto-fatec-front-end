@@ -1,0 +1,40 @@
+Vamos fazer uma aplicação Web com a seguinte arquitetura
+   >Front-end 
+   >Acesso à API: https://profVerissimoFatec.pythonanywhere.com
+   >HTML
+   >Bootstrap/CSS
+   >JavaScript
+   Importante: Monte uma estrutura de  pastas conforme padrão profissional de desenvolvimento de software
+=======================================================
+Faça o padrão visual do site do Centro Paula Souza (Fatecs);
+No cabeçalho deverá ser colocado o "nome do Usário; O nome da Unidade
+
+É um site para a área administrativa, portanteo deve ter as seguintes funções previstas (links):
+       >Cadastros (Professor; Cursos; Disciplinas; Feriados; calendário de aulas híbridas)
+       >Gerar Grade horária do Professor
+       >Gerar Folha de Frequencia
+       >login 	   
+	   
+Vamos atuar primeiro no login:
+    para entradas que ainda não fizeram autenticação (login) deverá ser exibida somente uma pagina instituicional;
+	deve ser mostrada uma "janela" de login (email e senha)
+	neste caso, deveá ser chamada a API: 
+	       Método: POST
+		   end-point: https://profVerissimoFatec.pythonanywhere.com/auth/login
+		   body: 
+		   {
+              "email": é o email obtida da tela,
+              "senha": é a senha obtida da tela 
+	     	}	  
+     códigos de retorno previstos:
+	       200 = OK 
+		   404 = Usuario não encontrado
+		   403 = usuario inativo
+		   401 = Senha Inválida
+	Tratamento: para retorno 200, 	   
+               	 colocar o numeroMatricula e o nomeFuncionario no cabeçalho 
+                Buscar o nome da unidade na tabela "unidade" , com o codigoUnidade da tabela "usuario" para colocar no cabeçalho
+                       Para este acesso, end-point; https://profverissimofatec.pythonanywhere.com/unidades/<unidade obtida do login>
+                Para retornos 404 ou 401; dar mensagem "toast": Usuários ou senha Inválidos
+                para retorno 403: Mesagem : "Este Usuário está Inativo - Contate o Administrador do Sistema"				
+  	

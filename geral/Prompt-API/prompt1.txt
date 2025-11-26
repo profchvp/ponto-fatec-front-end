@@ -1,0 +1,76 @@
+fazer uma API considerando:
+Linguagem Python;
+Acesso a BD: SQLite
+Local de hospedagem: PythonAnywhere (Conta Gratuita)
+IMPORTANTE: Esta API deve ser feita, levando em considerção que rodará no ambiente PythonAnywhere , com acesso à plinlha excel , manipulaçao de  tabelas SQLite,.
+====================================================
+Item 1.0: Tabelas do sistema:
+   > "unidade" : é a unidade fatec
+       colunas: codigoUnidade (int) (PK); nomeFatecUnidade (Char 200); fatecDenominacaoOficial (CHar 200); nomeDiretor (Char 100)
+   > "parametros" parametros do processamento
+      colunas: ID (PK); anoReferencia (Int); mesReferencia(Int); matricula (FK - Tabela "usuario")
+   > "usuario": é o usuario responsavel pelo sistema
+       colunas:matricula (FK);codigoUnidade (FK - tabela Unidade); nomeFuncionario (Char 200); senhaLogin(password); indicadorAtivo (Boolean)    
+   > "professor" contem a lista de professor
+         colunas: matricula (PK); nomeProfessor(char:100); statusSituacao (int) (1-"Ativo", 9-"Suspenso de Processamento")
+	               regimeJuridico(Char:20); cargaHoraria(Char:20);horaAtividade(int); 
+	               HAE-O (Char:20); HAE-C (Char:20); obsManha (char:100);obsTarde (char:100);obsNoite (char:100);
+   > "calendarioFeriados" contem feriados do ano
+         colunas: ID(PK); descricao (char 100); dataFeriado (Date)
+   > "calendarioAulasRemotas" são os intervalos, com a previsão de aulas remotas 
+         colunas ID(PK); ID da tabela "curso" (FK); dataInicio (date); dataFim (date)
+   > "disicplinaBasica": são as disciplinas básicas do instituicao
+      colunas ID(PK); nomeDisicplina (char:100); cargaHoraria (int) 
+   > "curso" São cursos previstos na instituição 
+       colunas ID(PK); ID da tabela "curso" (FK); ID da tabela "Disciplina" (FK) 
+   > "cursoDiscplina": são as disciplinas que fazem parte de um curso
+      colunas ID(PK); ID da tabela "curso" (FK); ID da tabela "Disciplina" (FK)
+ 
+  > "DisciplinaGrade": É a grade do curso com as discplinas
+      colunas ID(PK); ID da tabela "cursoDisciplina" (FK); Periodo (char: 10 - manha/tarde/noite); diaSemana(Char:10- "Segunda";"Terca";"Quarta";""Quinta";"Sexta"; "Sabado") 
+       
+   > "gradeProfessor" são os dias de aulas do professor (grade horaria)
+       colunas: ID(PK); matricula (Tabela "professor" - PK); ID da tabela "DisciplinaGrade" (FK) 	
+   
+API-Carga de BD:  deverá prever as seguintes Necessidades (End-points)
+   > Carga na tabela "professor" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "feriados" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "calendarioAulasRemotas" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "disicplinaBasica" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "cursoDiscplina" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "curso" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "gradeProfessor" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "parametros" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "usuario" banco de dados (SQLITE) a partir de dados de uma planilha excel
+   > Carga na tabela "relacaoCursoDisciplina" banco de dados (SQLITE) a partir de dados de uma planilha excel 
+   > Carga na tabela "relacaoProfessorDisciplina" banco de dados (SQLITE) a partir de dados de uma planilha excel 
+API-GerarRelatorio  
+  (Esta API descrevemos depois) 
+====================================================  
+Vamos fazer as rotas,  por etapas:
+Etapa 1:
+     Rota de criação das tabelas básicas: /initialLoads
+
+    Nesta   rota, devermos criar todas as tabelas, conforme descrito em  Item 1.0: Tabelas do sistema:	 
+	    etapa  1.1 Fazer o DROP de todas as tabelas.
+		etapa  1.2 gravar a tabela de "unidade":
+		“Crie uma lista de dicionários Python contendo várias unidades da FATEC.  
+              Cada dicionário deve ter:
+					- 'codigoUnidade'  
+					- 'nomeUnidadeFatec'  
+					- 'denominacaoOficial'  
+					- 'nomeDiretor'  
+	         Acessar cada elemento deste dicionario e gravar a tabela "unidade", obtendo as colunas correspondentes no diconario.
+       etapa  1.3 Abrir arquivo excel "fatec-nnnnn-nome-aaaa-mm, onde, este valores devem ser validados do acesso à tabela "unidade":
+	   
+	   Verifique as partes do nome do arquivo, os dados encontrados na tabela "unidade:
+                   "nnnnn" deve ser localizado na tabela "unidade" coluna "codigoUnidade"
+				   O nome "nome" deve ser o nome correspondente ao codigoUnidade encontrado na tabela "unidade" (Coluna nomeFatecUnidade)
+				   
+        O arquivo deve ser encontrado no diretório do projeto "ArquivosBase". Se não encontrar, para retornar mensagem informativa com código indicativo do erro
+
+		Se arquivo encontrado, abrir a aba "parametros"
+		    se aba nao localizada: retornar mensagem informativa com código indicativo do erro
+			Com a aba aberta verificar:
+			   se ao codigo da unidade "nnnnn"
+		 
