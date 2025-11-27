@@ -1,17 +1,28 @@
+
 async function renderHeader() {
   const container = document.getElementById('site-header');
   const res = await fetch('./components/header.html');
   container.innerHTML = await res.text();
 
   const isAuth = Session.isAuthenticated();
+
+  // Esconde/mostra links conforme login
   document.querySelectorAll('[data-route]').forEach(el => {
     el.style.display = isAuth ? 'block' : 'none';
   });
 
+  // BRAND (lado esquerdo) - badge
+  const brandUnidade = document.getElementById('brand-unidade');
+
+  // Área do usuário (lado direito)
   const userArea = document.getElementById('user-area');
 
-  // --- NÃO AUTENTICADO ---
   if (!isAuth) {
+    // Sem login: badge some e aparece botão de login
+    if (brandUnidade) {
+      brandUnidade.classList.add('d-none');
+      brandUnidade.textContent = '';
+    }
     userArea.innerHTML = `
       <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">
         Login
@@ -20,50 +31,40 @@ async function renderHeader() {
     return;
   }
 
-  // --- AUTENTICADO ---
+  // Autenticado: leia info da sessão
   const u = Session.getUser();
+  const codigoUnidade = (u?.codigoUnidade ?? '').toString().trim();
+  const nomeUnidade   = (u?.nomeUnidade ?? '').toString().trim();
 
-  // CONSTRUINDO O TEXTO DA UNIDADE
-  const unidadeLinha = `
-    Unidade ${u.codigoUnidade ?? ''} – ${u.nomeUnidade ?? ''}
-  `;
+  // ===== Formatar exatamente "codigo - nome"
+  let textoUnidadeFormatado = '';
+  if (codigoUnidade && nomeUnidade) {
+    textoUnidadeFormatado = `${codigoUnidade} - ${nomeUnidade}`;
+  } else if (codigoUnidade) {
+    textoUnidadeFormatado = `Unidade ${codigoUnidade}`; // fallback
+  } else if (nomeUnidade) {
+    textoUnidadeFormatado = nomeUnidade; // fallback
+  }
 
-  // HTML COMPLETO DO BLOCO DO USUÁRIO
+  // Oculta badge (não queremos duplicar)
+  if (brandUnidade) {
+    brandUnidade.classList.add('d-none');
+    brandUnidade.textContent = '';
+  }
+
+  // Área do usuário (lado direito) — exibe nome + unidade formatada
+  const unidadeSuffix = textoUnidadeFormatado ? `<div>${textoUnidadeFormatado}</div>` : '';
   userArea.innerHTML = `
-    <div class="text-white text-end me-3" style="line-height: 1.2;">
-      <div><strong>${u.nomeFuncionario}</strong> (${u.numeroMatricula})</div>
-      <div>${unidadeLinha}</div>
-    </div>
-
-    <button class="btn btn-outline-light" id="logout-btn">Sair</button>
+    <div class="fw-semibold">${u.nomeFuncionario} (${u.numeroMatricula})</div>
+    ${unidadeSuffix}
+    <button class="btn btn-outline-light mt-1" id="logout-btn">Sair</button>
   `;
 
-  // EVENTO LOGOUT
   document.getElementById('logout-btn').addEventListener('click', () => {
     Session.clear();
     App.navigatePublic();
     Toast.show('Sessão encerrada.', 'success');
   });
-  const btn = document.getElementById("cadastrosAccordionBtn");
-const content = document.getElementById("cadastrosAccordion");
-
-if (btn && content) {
-  btn.addEventListener("click", () => {
-    const isOpen = btn.getAttribute("aria-expanded") === "true";
-
-    btn.setAttribute("aria-expanded", (!isOpen).toString());
-    content.style.display = isOpen ? "none" : "flex";
-  });
-
-  document.querySelectorAll("#cadastrosAccordion .accordion-link")
-    .forEach(link =>
-      link.addEventListener("click", () => {
-        content.style.display = "none";
-        btn.setAttribute("aria-expanded", "false");
-      })
-    );
-}
-
 }
 
 window.Header = { render: renderHeader };
