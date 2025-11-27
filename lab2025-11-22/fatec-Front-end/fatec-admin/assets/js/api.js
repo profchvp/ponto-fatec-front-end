@@ -21,38 +21,22 @@ async function httpGet(url) {
 }
 
 /* ========================================================
-   NOVA API: PROFESSORES
-   Usa httpPost e httpGet sem alterar sua estrutura atual
+   API PROFESSORES — usando API_BASE de config.js
 =========================================================== */
-
-const API_BASE = "https://profverissimofatec.pythonanywhere.com";
 
 const professores = {
 
-  /**
-   * POST /professores
-   */
   async create(professorData) {
-    const url = `${API_BASE}/professores`;
-    return await httpPost(url, professorData);
+    return await httpPost(`${API_BASE}/professores`, professorData);
   },
 
-  /**
-   * GET /professores
-   */
   async listar() {
-    const url = `${API_BASE}/professores`;
-    return await httpGet(url);
+    return await httpGet(`${API_BASE}/professores`);
   },
 
-  /**
-   * GET /professores/<matricula>
-   */
   async obterPorMatricula(matricula) {
-    const url = `${API_BASE}/professores/${matricula}`;
-    return await httpGet(url);
+    return await httpGet(`${API_BASE}/professores/${matricula}`);
   }
 };
 
-/* Export final */
 window.Api = { httpPost, httpGet, professores };
