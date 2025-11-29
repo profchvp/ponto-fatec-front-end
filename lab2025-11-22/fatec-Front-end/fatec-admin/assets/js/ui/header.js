@@ -1,8 +1,17 @@
-
 async function renderHeader() {
   const container = document.getElementById('site-header');
   const res = await fetch('./components/header.html');
   container.innerHTML = await res.text();
+
+  console.log("🔁 Header renderizado — registrando eventos de rota...");
+
+  // 🔥 REATIVAR AS ROTAS DEPOIS DE RECRIAÇÃO DO HEADER
+  if (window.App && typeof App.wireMenuLinks === "function") {
+    console.log("🔗 Chamando App.wireMenuLinks() após renderHeader()");
+    App.wireMenuLinks();
+  } else {
+    console.error("❌ ERRO: App.wireMenuLinks() NÃO encontrado!");
+  }
 
   const isAuth = Session.isAuthenticated();
 
@@ -18,7 +27,6 @@ async function renderHeader() {
   const userArea = document.getElementById('user-area');
 
   if (!isAuth) {
-    // Sem login: badge some e aparece botão de login
     if (brandUnidade) {
       brandUnidade.classList.add('d-none');
       brandUnidade.textContent = '';
@@ -36,27 +44,24 @@ async function renderHeader() {
   const codigoUnidade = (u?.codigoUnidade ?? '').toString().trim();
   const nomeUnidade   = (u?.nomeUnidade ?? '').toString().trim();
 
-  // ===== Formatar exatamente "codigo - nome"
   let textoUnidadeFormatado = '';
   if (codigoUnidade && nomeUnidade) {
     textoUnidadeFormatado = `${codigoUnidade} - ${nomeUnidade}`;
   } else if (codigoUnidade) {
-    textoUnidadeFormatado = `Unidade ${codigoUnidade}`; // fallback
+    textoUnidadeFormatado = `Unidade ${codigoUnidade}`;
   } else if (nomeUnidade) {
-    textoUnidadeFormatado = nomeUnidade; // fallback
+    textoUnidadeFormatado = nomeUnidade;
   }
 
-  // Oculta badge (não queremos duplicar)
   if (brandUnidade) {
     brandUnidade.classList.add('d-none');
     brandUnidade.textContent = '';
   }
 
-  // Área do usuário (lado direito) — exibe nome + unidade formatada
   const unidadeSuffix = textoUnidadeFormatado ? `<div>${textoUnidadeFormatado}</div>` : '';
   userArea.innerHTML = `
     <div class="fw-semibold">${u.nomeFuncionario} (${u.numeroMatricula})</div>
-    ${unidadeSuffix}
+      ${unidadeSuffix}
     <button class="btn btn-outline-light mt-1" id="logout-btn">Sair</button>
   `;
 

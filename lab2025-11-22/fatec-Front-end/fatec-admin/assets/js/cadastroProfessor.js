@@ -1,9 +1,19 @@
-document.addEventListener("DOMContentLoaded", () => {
-  
+(() => {
+  console.log("📌 cadastroProfessor.js carregado!");
+
   const form = document.getElementById("formProfessor");
-  
+
+  if (!form) {
+    console.error("❌ ERRO: formProfessor NÃO encontrado no DOM!");
+    return;
+  }
+
+  console.log("✅ formProfessor encontrado, registrando listener...");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    console.log("🚀 Evento SUBMIT disparado!");
 
     const payload = {
       matricula: Number(document.getElementById("matricula").value),
@@ -19,14 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
       obsNoite: document.getElementById("obsNoite").value.trim(),
     };
 
-    console.log("Enviando dados do professor:", payload);
+    console.log("📦 Payload pronto:", payload);
 
-    // Após API pronta:
-    // const { status, data } = await Api.httpPost(Config.ENDPOINTS.professores, payload);
-
-    Toast.show("Professor salvo com sucesso!", "success");
+    try {
+      Toast.show("Professor salvo com sucesso!", "success");
+      console.log("✅ Toast.show foi chamado!");
+    } catch (err) {
+      console.error("❌ ERRO ao chamar Toast.show:", err);
+    }
   });
-
-   
-
-});
+})();
